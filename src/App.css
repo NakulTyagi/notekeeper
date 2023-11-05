@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  padding: 100px 200px;
 }
 
 .App-logo {
@@ -26,6 +27,12 @@
 
 .App-link {
   color: #61dafb;
+}
+
+@media only screen and (max-width: 600px) {
+ .App { 
+    padding: 20px !important;
+  }
 }
 
 @keyframes App-logo-spin {
