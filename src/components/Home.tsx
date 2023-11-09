@@ -72,13 +72,45 @@ function Home() {
         unpin.push(note)
       }
     });
-    console.log(pin,pinNotes, notes,unpin)
     setpinnedNotes(pinNotes);
     setunpinnedNotes(unpin);
+  }
+
+  const deleteNote=(noteId)=>{
+    let noteList:any = [];
+    let unpin:any = [];
+    let pinNotes:any = [];
+    let pinIDs:any = [];
+    pinned.forEach((id:any)=>{
+      if(id!==noteId){
+        pinIDs.push(id);
+      }
+    });
+    setpinned(pinIDs);
+
+    notes.forEach((note:any)=>{
+      if(note.id!==noteId){
+        noteList.push(note);
+      }
+    });
+
+    noteList.forEach((note:any) => {
+      if(pinIDs.includes(note.id) && note.id !==noteId){
+        pinNotes.push(note);
+      }else{
+        unpin.push(note)
+      }
+    });
+    setpinnedNotes(pinNotes);
+    setunpinnedNotes(unpin);
+    setNotes(noteList);
   }
             
   return (
     <div style={{position:'relative'}}>
+      <div style={{marginBottom: 24, color:'#3B71CA'}}>
+        <h3>Keep it.</h3>
+      </div>
       <div style={{border: '0.5px solid #9FA6B2', width: 'fit-content', borderRadius:12, padding:12}}>
         <form onSubmit={handleSubmit} style={{display:'flex', flexDirection:'row', flexWrap:'wrap', gap:12, position:'relative'}}>
           <div style={{display:'flex',flexWrap:'wrap',flexDirection:'column', gap:12}}>
@@ -112,9 +144,9 @@ function Home() {
 
       <div style={{display:'flex', flexWrap:'wrap',gap:20, marginTop:20}}>
         {pinnedNotes.map((note:any, index)=>(
-        <MDBCard key={index}>
+        <MDBCard style={{minWidth:300}} key={index}>
           <MDBCardBody style={{position:'relative'}}>
-            <MDBIcon fas icon="minus-circle" onClick={() =>filterUnpinNotes(note.id)} style={{ cursor:"pointer",position:'absolute', top:10, right:10}} />
+            <MDBIcon fas icon="minus-circle" onClick={() =>filterUnpinNotes(note.id)} style={{ cursor:"pointer",position:'absolute', top:10, right:60}} />
             <MDBCardTitle> {note.title}</MDBCardTitle>
             <MDBCardText>
               {note.tagline}
@@ -122,7 +154,7 @@ function Home() {
             <MDBCardText>
               {note.body}
             </MDBCardText>
-            <MDBBtn>Button</MDBBtn>
+            <MDBIcon fas icon="trash-alt" onClick={() =>deleteNote(note.id)} style={{ cursor:"pointer",position:'absolute', top:10, right:10}} />
           </MDBCardBody>
         </MDBCard>
         ))}
@@ -130,9 +162,9 @@ function Home() {
 
       <div style={{display:'flex', flexWrap:'wrap',gap:20, marginTop:20}}>
         {unpinnedNotes.map((note:any, index)=>(
-        <MDBCard key={index}>
+        <MDBCard style={{minWidth:300}} key={index}>
           <MDBCardBody style={{position:'relative'}}>
-            <MDBIcon fas icon="thumbtack" onClick={() =>filterNotes(note.id)} style={{ cursor:"pointer",position:'absolute', top:10, right:10}} />
+            <MDBIcon fas icon="thumbtack" onClick={() =>filterNotes(note.id)} style={{ cursor:"pointer",position:'absolute', top:10, right:60}} />
             <MDBCardTitle> {note.title}</MDBCardTitle>
             <MDBCardText>
               {note.tagline}
@@ -140,7 +172,7 @@ function Home() {
             <MDBCardText>
               {note.body}
             </MDBCardText>
-            <MDBBtn>Button</MDBBtn>
+            <MDBIcon fas icon="trash-alt" onClick={() =>deleteNote(note.id)} style={{ cursor:"pointer",position:'absolute', top:10, right:10}} />
           </MDBCardBody>
         </MDBCard>
         ))}
