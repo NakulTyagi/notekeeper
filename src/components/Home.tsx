@@ -12,28 +12,59 @@ function Home() {
   const [title, setTitle] = useState('');
   const [tagline, setTagline] = useState('');
   const [body, setBody] = useState('');
+  const [isCurrentNote, setisCurrentNote] = useState(false);
   const [notes, setNotes] = useState([]);
   const [unpinnedNotes, setunpinnedNotes] = useState([]);
   const [pinnedNotes, setpinnedNotes] = useState([]);
   const [pinned, setpinned] = useState<any>([]);
+  const [currNoteid, setCurId] = useState<number>();
+
 
   useEffect(()=>{
-  }, [])
+  }, [notes])
 
   const handleSubmit = (event) => {
-    let noteList:any = notes;
-    noteList.push({
-      id: noteList.length+1,
-      title: title,
-      tagline: tagline,
-      body: body
+    if(isCurrentNote){
+      setisCurrentNote(false);
+      editNote();
+    }else{
+      let noteList:any = notes;
+      noteList.push({
+        id: noteList.length+1,
+        title: title,
+        tagline: tagline,
+        body: body
+      });
+      setNotes(noteList);
+      setTitle('');
+      setBody('');
+      setTagline('');
+      filterNotes()
+      event.preventDefault();
+    }
+  }
+
+  const editNote = ()=>{
+    let noteList:any = [];
+    notes.forEach((note:any)=>{
+      console.log(note.id, currNoteid)
+      if(note.id === currNoteid){
+        noteList.push({
+          id: note.id,
+          title: title,
+          tagline: tagline,
+          body: body
+        })
+      }else{
+        noteList.push(note)
+      }
     });
+    console.log(noteList)
     setNotes(noteList);
     setTitle('');
     setBody('');
     setTagline('');
-    filterNotes()
-    event.preventDefault();
+    noteSetting(pinned, noteList);
   }
 
   const filterNotes = (noteId?) =>{
@@ -43,7 +74,6 @@ function Home() {
       pin.push(noteId);
       setpinned(pin);
     }
-    // console.log(pin, noteId)
     noteSetting(pin);
   }
 
@@ -62,10 +92,10 @@ function Home() {
     noteSetting(pin);
   }
 
-  const noteSetting = (pin) =>{
+  const noteSetting = (pin, notelist?) =>{
     let unpin:any = [];
     let pinNotes:any = [];
-    notes.forEach((note:any) => {
+    (notelist || notes).forEach((note:any) => {
       if(pin.includes(note.id)){
         pinNotes.push(note);
       }else{
@@ -105,6 +135,14 @@ function Home() {
     setunpinnedNotes(unpin);
     setNotes(noteList);
   }
+
+  const edit = (note:any) =>{
+    setTitle(note.title);
+    setBody(note.body);
+    setTagline(note.tagline);
+    setCurId(note.id);
+    setisCurrentNote(true);
+  }
             
   return (
     <div style={{position:'relative'}}>
@@ -112,7 +150,7 @@ function Home() {
         <h3>Keep it.</h3>
       </div>
       <div style={{border: '0.5px solid #9FA6B2', width: 'fit-content', borderRadius:12, padding:12}}>
-        <form onSubmit={handleSubmit} style={{display:'flex', flexDirection:'row', flexWrap:'wrap', gap:12, position:'relative'}}>
+        <div style={{display:'flex', flexDirection:'row', flexWrap:'wrap', gap:12, position:'relative'}}>
           <div style={{display:'flex',flexWrap:'wrap',flexDirection:'column', gap:12}}>
             <MDBInput
               value={title}
@@ -138,8 +176,8 @@ function Home() {
               id='body'
             />
           </div>
-          <MDBBtn type="submit" value="Submit" >Submit</MDBBtn>
-        </form>
+          <MDBBtn type="submit" onClick={handleSubmit} value="Submit" >Submit</MDBBtn>
+        </div>
       </div>
 
       <div style={{display:'flex', flexWrap:'wrap',gap:20, marginTop:20}}>
@@ -155,6 +193,7 @@ function Home() {
               {note.body}
             </MDBCardText>
             <MDBIcon fas icon="trash-alt" onClick={() =>deleteNote(note.id)} style={{ cursor:"pointer",position:'absolute', top:10, right:10}} />
+            <MDBIcon fas icon="pen" onClick={() =>edit(note)} style={{ cursor:"pointer",position:'absolute', bottom:20, right:10}} />
           </MDBCardBody>
         </MDBCard>
         ))}
@@ -173,6 +212,7 @@ function Home() {
               {note.body}
             </MDBCardText>
             <MDBIcon fas icon="trash-alt" onClick={() =>deleteNote(note.id)} style={{ cursor:"pointer",position:'absolute', top:10, right:10}} />
+            <MDBIcon fas icon="pen" onClick={() =>edit(note)} style={{ cursor:"pointer",position:'absolute', bottom:20, right:10}} />
           </MDBCardBody>
         </MDBCard>
         ))}
